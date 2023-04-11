@@ -25,4 +25,4 @@ Once the `AlignedToTranscriptome`, `salmon_align_quant`, `transcriptome`, `fastq
 `bsub < job.sh` Again from the `Portfolio` directory.  
 
 ## Output
-One quant.qf file is made for each sample. These can be imported into galaxy/R for downstream analysis.  
+One quant.qf file is made for each sample which can be found after running the pipeline in directories named after each sample in the `salmon_align_quant` directory. These can be imported into galaxy/R for downstream analysis.  
