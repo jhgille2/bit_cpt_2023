@@ -20,9 +20,10 @@ First, copy `make_folders.sh`, `job.sh`, and `makefile`from this repository to t
 <br>  
 `bash make_folders.sh` in the `Portfolio` directory.   
 <br>  
+
 Once the `AlignedToTranscriptome`, `salmon_align_quant`, `transcriptome`, `fastqc`, `starindices`, and `starOutputfiles` folders have been added, the pipeline can be run with:  
 <br>  
 `bsub < job.sh` Again from the `Portfolio` directory.  
-
+Next, paths to the genome, annotations, and transcriptome files have to be changed in the makefile. These are variables that store the paths to genome, annotation, and transcriptome files but because we have multiple genomes along with their associated annotations and transcriptome files, these will have to be changed to they they actually point at the genome I'm using to the portfolio (they're pointing to the data for the v2 Lee genome right now).  
 ## Output
 One quant.sf file is made for each sample which can be found after running the pipeline in directories named after each sample in the `salmon_align_quant` directory. These can be imported into galaxy/R for downstream analysis.  
