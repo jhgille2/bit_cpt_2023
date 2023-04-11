@@ -17,12 +17,9 @@ We have **.fastq** files for three soybean tissue types, and five replicates for
 The makefile uses input files from the `/share/bitcpt/S23` directory on the NCSU hazel cluster. The first part of the makefile sets up the paths to expected input and output files. The paths to the input files are set already, but some of the output paths assume a strict directory structure. The `make_folders.sh` file can help to set up this structure. In the class, we had seperate folders for Arabidopsis, Soybean analysis to the v2 Lee genome, and a third directory specifically for the portfolio project. This setup assumes you are starting from inside an empty portfolio directory e.g. `/share/bitcpt/S23/{UnityID}/Portfolio/`.  
 
 First, copy `make_folders.sh`, `job.sh`, and `makefile`from this repository to the `Portfolio` directory. The other necessary folders can then be added by running: 
-
 <br>  
 `bash make_folders.sh` in the `Portfolio` directory.   
 <br>  
-
 Once the `AlignedToTranscriptome`, `salmon_align_quant`, `transcriptome`, `fastqc`, `starindices`, and `starOutputfiles` folders have been added, the pipeline can be run with:  
-
 <br>  
 `bsub < job.sh` Again from the `Portfolio` directory.  
