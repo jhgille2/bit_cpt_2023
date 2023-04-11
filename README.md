@@ -13,4 +13,11 @@ We have **.fastq** files for three soybean tissue types, and five replicates for
 3. Align reads to the reference genome/transcriptome again with star.  
 4. Quantify these aligned reads with [salmon](https://salmon.readthedocs.io/en/latest/salmon.html)  
 
+## Running the pipeline  
+The makefile uses input files from the `/share/bitcpt/S23` directory on the NCSU hazel cluster. The first part of the makefile sets up the paths to expected input and output files. The paths to the input files are set already, but some of the output paths assume a strict directory structure. The `make_folders.sh` file can help to set up this structure. In the class, we had seperate folders for Arabidopsis, Soybean analysis to the v2 Lee genome, and a third directory specifically for the portfolio project. This setup assumes you are starting from inside an empty portfolio directory e.g. `/share/bitcpt/S23/jhgille2/Portfolio/`.  
+
+The necessary folders can then be added by running:  
+`bash make_folders.sh`  
+
+
 
