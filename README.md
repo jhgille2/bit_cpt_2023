@@ -23,3 +23,6 @@ First, copy `make_folders.sh`, `job.sh`, and `makefile`from this repository to t
 Once the `AlignedToTranscriptome`, `salmon_align_quant`, `transcriptome`, `fastqc`, `starindices`, and `starOutputfiles` folders have been added, the pipeline can be run with:  
 <br>  
 `bsub < job.sh` Again from the `Portfolio` directory.  
+
+## Output
+One quant.qf file is made for each sample. These can be imported into galaxy/R for downstream analysis.  
