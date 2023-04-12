@@ -13,7 +13,7 @@ We have .fastq files from rna seq reads for three soybean tissue types, and five
   **Outputs:** 30 fastqc html reports (one for each .fastq file).  
 2. Index a reference genome with [star](https://github.com/alexdobin/STAR).  
   **Inputs:** genome .fna file, annotations .gtf file.  
-  Outputs: A directory (`starindices`) with index helper files.  
+  **Outputs:** A directory (`starindices`) with index helper files.  
 4. Align reads to the reference genome/transcriptome again with star.  
   **Inputs:** genome index directory, the two paired reads for each sample for each alignment.  
   **Outputs:** One .bam file per sample.  
