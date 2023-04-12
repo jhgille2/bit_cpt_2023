@@ -24,6 +24,7 @@ SALMON=/usr/local/usrapps/bitcpt/salmon/bin/salmon
 raw_samples = Gm_SA_Rep1 Gm_SA_Rep2 Gm_SA_Rep3 Gm_SA_Rep4 Gm_SA_Rep5
 clean_samples = Gm_OldLeaf_Rep1 Gm_OldLeaf_Rep2 Gm_OldLeaf_Rep3 Gm_OldLeaf_Rep4 Gm_OldLeaf_Rep5 Gm_YoungLeaf_Rep1 Gm_YoungLeaf_Rep2 Gm_YoungLeaf_Rep3 Gm_YoungLeaf_Rep4 Gm_YoungLeaf_Rep5
 
+# All the samples together
 all_samples := $(raw_samples) $(clean_samples)  
 
 # Output bam files
@@ -35,16 +36,26 @@ all_samples_bam := $(raw_samples_bam) $(clean_samples_bam)
 quant_dir := $(foreach wrd,$(all_samples), $(quant_dir)/$(wrd))
 quant_files := $(foreach wrd,$(quant_dir), $(wrd)/quant.sf)
 
+# Set up commands for salmon quantification
+# First need an index to pull out parallel elements for the all_samples_bam and quant_dir lists
+n_commands := $(words $(all_samples_bam))
+n_seq := $(shell seq 1 $(n_commands)) 
+
+# Make all the salmon commands by indexing through the bam files and output directories in parallel
+all_salmon_commands := $(foreach number,$(n_seq), $(SALMON)' quant -l A -a '$(word $(number), $(all_samples_bam))' --targets '$(transcriptome_path)' -o '$(word $(number), $(quant_dir)))
+
+
 # START TARGETS
 ##################################################################
 
 # All target to run everything
-all: starindices/SA $(raw_samples_bam) $(clean_samples_bam) $(quant_files)
+all: $(quant_files)
 
+# The fastqc files
 fastqc/*_fastqc.html:
 	${FASTQC} /share/bitcpt/S23/RawData/Glycine_max/* -t 12 -outdir ${fastqc_dir}
 
-# Target to index the genome
+# Index the genome
 starindices/SA:
 	${STAR} --runThreadN 12 \
 	 --runMode genomeGenerate \
@@ -54,23 +65,21 @@ starindices/SA:
 	 --sjdbGTFfile ${annotations_path} \
 	 --sjdbOverhang 100
 
-
 # Align files to transcriptome
+# 1. Raw reads
 $(raw_samples_bam): starindices/SA
 	for SAMPLE in $(raw_samples) ; do \
     	$(STAR) --runThreadN 12 --runMode alignReads --genomeDir $(index) --outFileNamePrefix $(transcriptome_out)/$${SAMPLE}_ --readFilesIn $(raw_data_dir)/$${SAMPLE}_1.fq.gz $(raw_data_dir)/$${SAMPLE}_2.fq.gz --readFilesCommand zcat --outSAMtype BAM Unsorted --twopassMode Basic --quantMode TranscriptomeSAM ; \
 	done
 
+# 2. Trimmed reads
 $(clean_samples_bam): starindices/SA
 	for SAMPLE in $(clean_samples); do \
     	$(STAR) --runThreadN 12 --runMode alignReads --genomeDir $(index) --outFileNamePrefix $(transcriptome_out)/$${SAMPLE}_ --readFilesIn $(clean_data_dir)/$${SAMPLE}_1.fp.fq.gz $(clean_data_dir)/$${SAMPLE}_2.fp.fq.gz --readFilesCommand zcat --outSAMtype BAM Unsorted --twopassMode Basic --quantMode TranscriptomeSAM ; \
 	done
 
-
+# Quantify against the transcriptome with salmon
 $(quant_files): $(all_samples_bam)
-	for i in ${!all_samples_bam[@]} ; do \
-		${SALMON} quant -l A \
-		-a ${all_samples_bam[i]} \
-		--targets ${transcriptome_path} \
-		-0 ${quant_dir[i]} \
+	for command in $(all_salmon_commands); do \
+		$$command ; \
 	done
