@@ -14,10 +14,10 @@ We have .fastq files from rna seq reads for three soybean tissue types, and five
 2. Index a reference genome with [star](https://github.com/alexdobin/STAR).  
   **Inputs:** genome .fna file, annotations .gtf file.  
   **Outputs:** Index helper files to a directory (`starindices`).  
-4. Align reads to the reference genome/transcriptome again with star.  
+3. Align reads to the reference genome/transcriptome again with star.  
   **Inputs:** genome index directory, the two paired reads for each sample for each alignment.  
   **Outputs:** One .bam file per sample.  
-6. Quantify these aligned reads with [salmon](https://salmon.readthedocs.io/en/latest/salmon.html)  
+4. Quantify these aligned reads with [salmon](https://salmon.readthedocs.io/en/latest/salmon.html)  
   **Inputs:** Alignment .bam file for each sample, transcriptome file.  
   **Outputs:** Quantification `quant.sf` file.  
 
@@ -33,6 +33,12 @@ Next, paths to the genome, annotations, and transcriptome files have to be chang
 Once the `AlignedToTranscriptome`, `salmon_align_quant`, `transcriptome`, `fastqc`, `starindices`, and `starOutputfiles` folders have been added, the pipeline can be run with:  
 <br>  
 `bsub < job.sh` Again from the `Portfolio` directory.  
- 
+
+## BIT CPT specifics
+For the data we are using in BIT CPT Spring 2023, I know in advance what kind of, and how many files I want to see in each step. I'll just go through them here for completeness/a sanity check. 
+1. fastqc: We have three tissue types that each have five samples. For each sample we have two paired reads that have one fastq file per read. So in total we have 30 fastq files that we need to do quality control on. The fastq step outputs data to the `fastqc` directory off the main directory so after the step runs, we should see 30 *\_fastqc.html files here, each paired with a \*_.zip directory.  
+2. Indexing the genome: After this step runs, the STAR software outputs some somewhat cryptically named files with some cryptic content to the `starindices` directory. I am not sure what each of these files do individually and a cursory google search around some forums indicated that I'm not alone there. Basically just look that you have [these files](https://www.biostars.org/p/9471213/), that they are not empty, and the job didn't produce any concerning errors/output when generating the index.  
+3. Alignment: In this step, we align each of the two reads for each of our samples to the genome. Because we have 30 samples, this will produce 30 *sets* of files in the `AlignedToTranscriptome` directory. Really, we're just worried about the alignment **.bam** files though, and specifically the alignments to the transcriptome. There is one of these alignment files for each sample and they can be identified with {sample name}\_Aligned.toTranscriptome.out.bam. So in total, there will be 30 of these alignment files produced by this step, one for each sample.  
+4. Quantification: This step takes the alignment files produced by the previous steps and quantifies the transcripts using some provided transcriptome .fa file. This produces a quantification `quant.sf` file for each sample, and stores this `quant.sf` file in a directory for each sample within the `salmon_align_quant` directory. Because there are 30 samples, there will be 30 of these quantification files, each one within 30 sample directories that are in turn nested within the `salmon_align_quant` directory.  
 ## Output
 One quant.sf file is made for each sample which can be found after running the pipeline in directories named after each sample in the `salmon_align_quant` directory. These can be imported into galaxy/R for downstream analysis.  
